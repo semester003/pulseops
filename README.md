@@ -143,19 +143,21 @@ Never commit a real `.env` file or production secrets.
 
 ## Commands
 
-| Command                     | Purpose                                                        |
-| --------------------------- | -------------------------------------------------------------- |
-| `npm run dev`               | Start the API with TypeScript watch mode.                      |
-| `npm run worker`            | Start the separate worker with TypeScript execution.           |
-| `npm run build`             | Compile API and worker output to `dist/`.                      |
-| `npm run start`             | Start compiled API output.                                     |
-| `npm run typecheck`         | Perform strict TypeScript checking.                            |
-| `npm run lint`              | Enforce ESLint rules with zero warnings.                       |
-| `npm test`                  | Run fast unit tests and skip opt-in integration tests.         |
-| `npm run test:watch`        | Run Vitest in watch mode.                                      |
-| `npm run db:migrate`        | Create and apply development migrations.                       |
-| `npm run db:migrate:deploy` | Apply committed migrations safely.                             |
-| `npm run db:seed`           | Run the optional seed command when added for a local scenario. |
+| Command                | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `npm run dev`          | Start the API with TypeScript watch mode.              |
+| `npm run worker`       | Start the separate worker with TypeScript execution.   |
+| `npm run build`        | Compile API and worker output to `dist/`.              |
+| `npm run start`        | Start compiled API output.                             |
+| `npm run typecheck`    | Perform strict TypeScript checking.                    |
+| `npm run lint`         | Enforce ESLint rules with zero warnings.               |
+| `npm run format:check` | Verify repository formatting without modifying files.  |
+| `npm test`             | Run fast unit tests and skip opt-in integration tests. |
+
+| `npm run test:watch` | Run Vitest in watch mode. |
+| `npm run db:migrate` | Create and apply development migrations. |
+| `npm run db:migrate:deploy` | Apply committed migrations safely. |
+| `npm run db:seed` | Run the optional seed command when added for a local scenario. |
 
 ## Testing
 

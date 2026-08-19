@@ -35,7 +35,7 @@ export async function enqueueNotification(deliveryId: string) {
   return incidentQueue.add(
     'notification',
     { kind: 'notification', deliveryId },
-    { jobId: `notification:${deliveryId}` },
+    { jobId: `notification-${deliveryId}` },
   );
 }
 
@@ -48,7 +48,7 @@ export async function scheduleEscalation(
     'escalation',
     { kind: 'escalation', incidentId, expectedStep },
     {
-      jobId: `escalation:${incidentId}:${expectedStep}`,
+      jobId: `escalation-${incidentId}-${expectedStep}`,
       delay: acknowledgementTimeoutMin * 60_000,
     },
   );

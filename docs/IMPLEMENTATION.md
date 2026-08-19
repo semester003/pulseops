@@ -143,11 +143,11 @@ Escalation performs an expected-step conditional update inside a serializable tr
 
 ## Tests delivered
 
-| Test level                            | Coverage                                                                                                                                                                                                   |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit                                  | Deterministic rotation indexing, step progression, and exhaustion behavior.                                                                                                                                |
-| Opt-in database and Redis integration | Registration, login, invalid credentials, admin permissions, viewer rejection, cross-organization rejection, incident creation, acknowledgement, resolution, and invalid acknowledgement after resolution. |
-| Manual runtime path                   | Docker Compose creates PostgreSQL, Redis, API, and worker; its documented workflow exercises real queue processing.                                                                                        |
+| Test level                            | Coverage                                                                                                                                                                                                                                        |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit                                  | Deterministic rotation indexing, step progression, and exhaustion behavior.                                                                                                                                                                     |
+| Opt-in database and Redis integration | Registration, login, invalid credentials, admin permissions, viewer rejection, cross-organization rejection, incident creation, BullMQ job publication, acknowledgement, resolution, and invalid acknowledgement after resolution.              |
+| Manual runtime path                   | A real local PostgreSQL/Redis run created an incident through the API, delivered steps 0 and 1 through the worker, and confirmed acknowledgement prevents a step-2 delivery. Docker Compose provides the equivalent documented deployment path. |
 
 The integration suite is intentionally opt-in with `RUN_INTEGRATION_TESTS=true` because it must run against actual PostgreSQL and Redis. It is not falsely presented as having run in an environment without container support.
 
@@ -159,15 +159,16 @@ The GitHub Actions workflow runs installation, Prisma generation, strict type ch
 
 ## Verification performed in this environment
 
-| Command               | Result                                                                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `npm install`         | Passed.                                                                                                       |
-| `npx prisma generate` | Passed.                                                                                                       |
-| `npm run typecheck`   | Passed after full implementation.                                                                             |
-| `npm run lint`        | Passed with zero warnings.                                                                                    |
-| `npm test`            | Passed: three unit tests; three integration tests intentionally skipped without `RUN_INTEGRATION_TESTS=true`. |
-| `npm run build`       | Passed.                                                                                                       |
-| `docker --version`    | Not available in this sandbox, so Compose/API/worker integration could not be started here.                   |
+| Command                               | Result                                                                                                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`                         | Passed.                                                                                                                                                     |
+| `npx prisma generate`                 | Passed.                                                                                                                                                     |
+| `npm run typecheck`                   | Passed after full implementation.                                                                                                                           |
+| `npm run lint`                        | Passed with zero warnings.                                                                                                                                  |
+| `RUN_INTEGRATION_TESTS=true npm test` | Passed: six tests against real local PostgreSQL and Redis, including BullMQ job publication.                                                                |
+| `npm run build`                       | Passed.                                                                                                                                                     |
+| Live API and worker verification      | Passed: API health endpoint, migrations, seed command, notification delivery, escalation from step 0 to 1, and acknowledgement stopping further escalation. |
+| `docker --version`                    | Not available in this sandbox, so Docker Compose itself was not started here; equivalent services were run locally for verification.                        |
 
 ## Deliberately out of scope
 

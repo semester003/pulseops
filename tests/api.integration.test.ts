@@ -4,6 +4,7 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { createApp } from '../src/app.js';
 import { prisma } from '../src/config/prisma.js';
+import { closeIncidentQueue, incidentQueue } from '../src/queues/incident.queue.js';
 
 const integrationEnabled = process.env.RUN_INTEGRATION_TESTS === 'true';
 const integration = describe.runIf(integrationEnabled);
@@ -30,6 +31,7 @@ integration('PulseOps HTTP integration', () => {
 
   afterAll(async () => {
     await clearDatabase();
+    await closeIncidentQueue();
     await prisma.$disconnect();
   });
 
@@ -168,6 +170,11 @@ integration('PulseOps HTTP integration', () => {
     const incidentId = incident.body.incident.id as string;
     expect(incident.body.incident.status).toBe('TRIGGERED');
     expect(incident.body.incident.currentResponder.id).toBe(responder.body.user.id);
+    const deliveryId = incident.body.incident.deliveries[0].id as string;
+    const notificationJob = await incidentQueue.getJob(`notification-${deliveryId}`);
+    const escalationJob = await incidentQueue.getJob(`escalation-${incidentId}-0`);
+    expect(notificationJob?.data).toEqual({ kind: 'notification', deliveryId });
+    expect(escalationJob?.data).toEqual({ kind: 'escalation', incidentId, expectedStep: 0 });
 
     await request(app)
       .post(`/incidents/${incidentId}/acknowledge`)
