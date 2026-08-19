@@ -1,0 +1,68 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pulseops
+      POSTGRES_PASSWORD: pulseops
+      POSTGRES_DB: pulseops
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pulseops -d pulseops']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  api:
+    build: .
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://pulseops:pulseops@postgres:5432/pulseops?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: change-this-compose-development-secret-to-a-long-random-value
+      JWT_EXPIRES_IN: 8h
+      LOG_LEVEL: info
+    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+
+  worker:
+    build: .
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://pulseops:pulseops@postgres:5432/pulseops?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: change-this-compose-development-secret-to-a-long-random-value
+      JWT_EXPIRES_IN: 8h
+      LOG_LEVEL: info
+    command: sh -c "npx prisma migrate deploy && node dist/workers/worker.js"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
