@@ -1,6 +1,7 @@
 import { OrganizationRole } from '@prisma/client';
 import { Router } from 'express';
 
+import { listIncidents } from '../controllers/incident.controller.js';
 import {
   addOrganizationMember,
   createOrganization,
@@ -43,6 +44,7 @@ organizationRouter.get('/:organizationId/members', canRead, asyncHandler(listOrg
 organizationRouter.get('/:organizationId/teams', canRead, asyncHandler(listTeams));
 organizationRouter.post('/:organizationId/teams', isAdmin, validate(createTeamSchema), asyncHandler(createTeam));
 organizationRouter.get('/:organizationId/services', canRead, asyncHandler(listServices));
+organizationRouter.get('/:organizationId/incidents', canRead, asyncHandler(listIncidents));
 organizationRouter.post(
   '/:organizationId/services',
   isAdmin,

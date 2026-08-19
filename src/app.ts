@@ -5,6 +5,7 @@ import pinoHttp from 'pino-http';
 
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { authRouter } from './routes/auth.routes.js';
+import { incidentRouter } from './routes/incident.routes.js';
 import { organizationRouter } from './routes/organization.routes.js';
 import { serviceRouter } from './routes/service.routes.js';
 import { teamRouter } from './routes/team.routes.js';
@@ -23,6 +24,7 @@ export function createApp() {
   app.use('/organizations', organizationRouter);
   app.use('/teams', teamRouter);
   app.use('/services', serviceRouter);
+  app.use('/incidents', incidentRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

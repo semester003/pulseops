@@ -28,6 +28,7 @@ enum IncidentStatus {
 
 enum DeliveryStatus {
   PENDING
+  PROCESSING
   SENT
   FAILED
 }
@@ -191,9 +192,10 @@ model NotificationDelivery {
   step        Int
   status      DeliveryStatus @default(PENDING)
   attemptCount Int            @default(0)
-  lastError   String?
-  sentAt      DateTime?
-  createdAt   DateTime       @default(now())
+  lastError             String?
+  processingStartedAt   DateTime?
+  sentAt                DateTime?
+  createdAt             DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   incident    Incident       @relation(fields: [incidentId], references: [id], onDelete: Cascade)
   recipient   User           @relation(fields: [recipientId], references: [id], onDelete: Restrict)
