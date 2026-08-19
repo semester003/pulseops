@@ -15,7 +15,10 @@ const incidentService = new IncidentService();
 
 export const createIncident: RequestHandler = async (request, response) => {
   const { serviceId } = serviceIdParamsSchema.parse(request.params);
-  const incident = await incidentService.create(serviceId, request.body as z.infer<typeof createIncidentSchema>);
+  const incident = await incidentService.create(
+    serviceId,
+    request.body as z.infer<typeof createIncidentSchema>,
+  );
   response.status(201).json({ incident });
 };
 

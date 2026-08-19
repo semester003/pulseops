@@ -2,10 +2,7 @@ import { Worker } from 'bullmq';
 
 import { env } from '../config/env.js';
 import { prisma } from '../config/prisma.js';
-import {
-  INCIDENT_QUEUE_NAME,
-  type IncidentQueueJob,
-} from '../queues/incident.queue.js';
+import { INCIDENT_QUEUE_NAME, type IncidentQueueJob } from '../queues/incident.queue.js';
 import { IncidentService } from '../services/incident.service.js';
 import { logger } from '../utils/logger.js';
 

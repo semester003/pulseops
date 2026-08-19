@@ -31,14 +31,23 @@ import {
 export const teamRouter = Router();
 
 teamRouter.use(authenticate);
-const canRead = requireTeamRole(OrganizationRole.ADMIN, OrganizationRole.RESPONDER, OrganizationRole.VIEWER);
+const canRead = requireTeamRole(
+  OrganizationRole.ADMIN,
+  OrganizationRole.RESPONDER,
+  OrganizationRole.VIEWER,
+);
 const isAdmin = requireTeamRole(OrganizationRole.ADMIN);
 
 teamRouter.get('/:teamId', canRead, asyncHandler(getTeam));
 teamRouter.patch('/:teamId', isAdmin, validate(updateTeamSchema), asyncHandler(updateTeam));
 teamRouter.delete('/:teamId', isAdmin, asyncHandler(removeTeam));
 teamRouter.get('/:teamId/members', canRead, asyncHandler(listTeamMembers));
-teamRouter.post('/:teamId/members', isAdmin, validate(addTeamMemberSchema), asyncHandler(addTeamMember));
+teamRouter.post(
+  '/:teamId/members',
+  isAdmin,
+  validate(addTeamMemberSchema),
+  asyncHandler(addTeamMember),
+);
 teamRouter.delete('/:teamId/members/:userId', isAdmin, asyncHandler(removeTeamMember));
 
 teamRouter.get('/:teamId/on-call-schedule', canRead, asyncHandler(getOnCallSchedule));
@@ -54,8 +63,16 @@ teamRouter.post(
   validate(addOnCallMemberSchema),
   asyncHandler(addOnCallMember),
 );
-teamRouter.delete('/:teamId/on-call-schedule/members/:userId', isAdmin, asyncHandler(removeOnCallMember));
-teamRouter.get('/:teamId/on-call-schedule/current-responder', canRead, asyncHandler(getCurrentResponder));
+teamRouter.delete(
+  '/:teamId/on-call-schedule/members/:userId',
+  isAdmin,
+  asyncHandler(removeOnCallMember),
+);
+teamRouter.get(
+  '/:teamId/on-call-schedule/current-responder',
+  canRead,
+  asyncHandler(getCurrentResponder),
+);
 
 teamRouter.get('/:teamId/escalation-policy', canRead, asyncHandler(getEscalationPolicy));
 teamRouter.put(

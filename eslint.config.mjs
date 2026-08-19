@@ -17,7 +17,10 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'import/order': ['error', { alphabetize: { order: 'asc', caseInsensitive: true }, 'newlines-between': 'always' }],
+      'import/order': [
+        'error',
+        { alphabetize: { order: 'asc', caseInsensitive: true }, 'newlines-between': 'always' },
+      ],
     },
   },
   prettier,

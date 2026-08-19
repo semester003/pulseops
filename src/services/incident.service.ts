@@ -1,18 +1,9 @@
-import {
-  DeliveryStatus,
-  IncidentSeverity,
-  IncidentStatus,
-  Prisma,
-} from '@prisma/client';
+import { DeliveryStatus, IncidentSeverity, IncidentStatus, Prisma } from '@prisma/client';
 
 import { prisma } from '../config/prisma.js';
 import { notificationProvider } from '../providers/notification.provider.js';
 import { enqueueNotification, scheduleEscalation } from '../queues/incident.queue.js';
-import {
-  ConflictError,
-  NotFoundError,
-  StateTransitionError,
-} from '../utils/errors.js';
+import { ConflictError, NotFoundError, StateTransitionError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 import { currentRotationIndex, type RotationMember } from './oncall.service.js';
@@ -82,10 +73,14 @@ export class IncidentService {
       });
       if (!service) throw new NotFoundError('Service');
       if (!service.team.escalationPolicy) {
-        throw new ConflictError('The responsible team requires an escalation policy before incidents can be created.');
+        throw new ConflictError(
+          'The responsible team requires an escalation policy before incidents can be created.',
+        );
       }
       if (!service.team.onCallSchedule) {
-        throw new ConflictError('The responsible team requires an on-call schedule before incidents can be created.');
+        throw new ConflictError(
+          'The responsible team requires an on-call schedule before incidents can be created.',
+        );
       }
 
       const now = new Date();
@@ -110,7 +105,8 @@ export class IncidentService {
       });
 
       const delivery = incident.deliveries[0];
-      if (!delivery) throw new ConflictError('Initial incident notification could not be prepared.');
+      if (!delivery)
+        throw new ConflictError('Initial incident notification could not be prepared.');
       return {
         incident,
         deliveryId: delivery.id,
@@ -186,7 +182,10 @@ export class IncidentService {
 
   public async resolve(incidentId: string, userId: string) {
     const result = await prisma.incident.updateMany({
-      where: { id: incidentId, status: { in: [IncidentStatus.TRIGGERED, IncidentStatus.ACKNOWLEDGED] } },
+      where: {
+        id: incidentId,
+        status: { in: [IncidentStatus.TRIGGERED, IncidentStatus.ACKNOWLEDGED] },
+      },
       data: { status: IncidentStatus.RESOLVED, resolvedAt: new Date(), resolvedById: userId },
     });
     if (result.count !== 1) {
@@ -246,7 +245,8 @@ export class IncidentService {
       logger.info({ deliveryId, incidentId: delivery.incident.id }, 'Notification job completed');
       return { delivered: true };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown notification provider error';
+      const message =
+        error instanceof Error ? error.message : 'Unknown notification provider error';
       await prisma.notificationDelivery.updateMany({
         where: { id: deliveryId, status: DeliveryStatus.PROCESSING },
         data: { status: DeliveryStatus.PENDING, processingStartedAt: null, lastError: message },
@@ -263,7 +263,10 @@ export class IncidentService {
     });
   }
 
-  public async processEscalation(incidentId: string, expectedStep: number): Promise<EscalationResult> {
+  public async processEscalation(
+    incidentId: string,
+    expectedStep: number,
+  ): Promise<EscalationResult> {
     const result = await this.withSerializableRetry(async (transaction) => {
       const incident = await transaction.incident.findUnique({
         where: { id: incidentId },
@@ -283,7 +286,11 @@ export class IncidentService {
           },
         },
       });
-      if (!incident || incident.status !== IncidentStatus.TRIGGERED || incident.escalationStep !== expectedStep) {
+      if (
+        !incident ||
+        incident.status !== IncidentStatus.TRIGGERED ||
+        incident.escalationStep !== expectedStep
+      ) {
         return { kind: 'ignored' } as const;
       }
       if (!incident.team.escalationPolicy || !incident.team.onCallSchedule) {
@@ -331,7 +338,10 @@ export class IncidentService {
       );
       logger.info({ incidentId, step: result.step }, 'Incident escalated to next responder');
     } else if (result.kind === 'exhausted') {
-      logger.warn({ incidentId, expectedStep }, 'Incident escalation stopped because rotation is exhausted');
+      logger.warn(
+        { incidentId, expectedStep },
+        'Incident escalation stopped because rotation is exhausted',
+      );
     }
     return result;
   }
@@ -358,7 +368,10 @@ export class IncidentService {
         scheduleEscalation(incidentId, 0, acknowledgementTimeoutMin),
       ]);
     } catch (error) {
-      logger.error({ err: error, incidentId, deliveryId }, 'Queue enqueue failed; pending delivery will be reconciled by worker');
+      logger.error(
+        { err: error, incidentId, deliveryId },
+        'Queue enqueue failed; pending delivery will be reconciled by worker',
+      );
     }
   }
 
@@ -374,7 +387,10 @@ export class IncidentService {
         scheduleEscalation(incidentId, step, acknowledgementTimeoutMin),
       ]);
     } catch (error) {
-      logger.error({ err: error, incidentId, deliveryId, step }, 'Escalation queue enqueue failed; pending delivery will be reconciled by worker');
+      logger.error(
+        { err: error, incidentId, deliveryId, step },
+        'Escalation queue enqueue failed; pending delivery will be reconciled by worker',
+      );
     }
   }
 
@@ -394,11 +410,14 @@ export class IncidentService {
       referenceTime,
     );
     const member = schedule.members[baseIndex + step];
-    if (!member) throw new ConflictError('The on-call rotation is exhausted without acknowledgement.');
+    if (!member)
+      throw new ConflictError('The on-call rotation is exhausted without acknowledgement.');
     return member;
   }
 
-  private async withSerializableRetry<T>(work: (transaction: IncidentTransaction) => Promise<T>): Promise<T> {
+  private async withSerializableRetry<T>(
+    work: (transaction: IncidentTransaction) => Promise<T>,
+  ): Promise<T> {
     for (let attempt = 1; attempt <= maxSerializableAttempts; attempt += 1) {
       try {
         return await prisma.$transaction(work, {

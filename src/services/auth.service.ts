@@ -24,7 +24,10 @@ const userSelect = {
 
 export class AuthService {
   public async register(input: RegisterInput) {
-    const existing = await prisma.user.findUnique({ where: { email: input.email }, select: { id: true } });
+    const existing = await prisma.user.findUnique({
+      where: { email: input.email },
+      select: { id: true },
+    });
     if (existing) {
       throw new ConflictError('An account with this email already exists.');
     }

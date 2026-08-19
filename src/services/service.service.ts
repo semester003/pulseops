@@ -68,7 +68,10 @@ export class ServiceService {
   }
 
   private async assertTeamInOrganization(teamId: string, organizationId: string) {
-    const team = await prisma.team.findFirst({ where: { id: teamId, organizationId }, select: { id: true } });
+    const team = await prisma.team.findFirst({
+      where: { id: teamId, organizationId },
+      select: { id: true },
+    });
     if (!team) {
       throw new ConflictError('The selected team does not belong to this organization.');
     }

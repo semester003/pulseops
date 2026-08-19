@@ -19,7 +19,11 @@ export function signAccessToken(auth: AuthContext): string {
 export function verifyAccessToken(token: string): AuthContext {
   const decoded = jwt.verify(token, env.JWT_SECRET);
 
-  if (typeof decoded === 'string' || typeof decoded.sub !== 'string' || typeof decoded.email !== 'string') {
+  if (
+    typeof decoded === 'string' ||
+    typeof decoded.sub !== 'string' ||
+    typeof decoded.email !== 'string'
+  ) {
     throw new Error('Invalid JWT payload.');
   }
 

@@ -69,7 +69,11 @@ export class OrganizationService {
 
     return prisma.organizationMember.create({
       data: { organizationId, userId: user.id, role },
-      select: { id: true, role: true, user: { select: { id: true, email: true, displayName: true } } },
+      select: {
+        id: true,
+        role: true,
+        user: { select: { id: true, email: true, displayName: true } },
+      },
     });
   }
 

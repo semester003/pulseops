@@ -39,10 +39,20 @@ const canRead = requireOrganizationRole(
 const isAdmin = requireOrganizationRole(organizationIdFromParams, OrganizationRole.ADMIN);
 
 organizationRouter.get('/:organizationId', canRead, asyncHandler(getOrganization));
-organizationRouter.patch('/:organizationId', isAdmin, validate(updateOrganizationSchema), asyncHandler(updateOrganization));
+organizationRouter.patch(
+  '/:organizationId',
+  isAdmin,
+  validate(updateOrganizationSchema),
+  asyncHandler(updateOrganization),
+);
 organizationRouter.get('/:organizationId/members', canRead, asyncHandler(listOrganizationMembers));
 organizationRouter.get('/:organizationId/teams', canRead, asyncHandler(listTeams));
-organizationRouter.post('/:organizationId/teams', isAdmin, validate(createTeamSchema), asyncHandler(createTeam));
+organizationRouter.post(
+  '/:organizationId/teams',
+  isAdmin,
+  validate(createTeamSchema),
+  asyncHandler(createTeam),
+);
 organizationRouter.get('/:organizationId/services', canRead, asyncHandler(listServices));
 organizationRouter.get('/:organizationId/incidents', canRead, asyncHandler(listIncidents));
 organizationRouter.post(
@@ -63,4 +73,8 @@ organizationRouter.patch(
   validate(updateOrganizationMemberSchema),
   asyncHandler(updateOrganizationMember),
 );
-organizationRouter.delete('/:organizationId/members/:memberId', isAdmin, asyncHandler(removeOrganizationMember));
+organizationRouter.delete(
+  '/:organizationId/members/:memberId',
+  isAdmin,
+  asyncHandler(removeOrganizationMember),
+);

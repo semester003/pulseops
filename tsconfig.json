@@ -17,6 +17,12 @@
     "sourceMap": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*.ts", "prisma/**/*.ts", "tests/**/*.ts", "eslint.config.mjs", "vitest.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "prisma/**/*.ts",
+    "tests/**/*.ts",
+    "eslint.config.mjs",
+    "vitest.config.ts"
+  ],
   "exclude": ["dist", "node_modules"]
 }

@@ -12,7 +12,11 @@ export const notFoundHandler: RequestHandler = (request, _response, next) => {
 export const errorHandler: ErrorRequestHandler = (error: unknown, request, response, _next) => {
   if (error instanceof AppError) {
     response.status(error.statusCode).json({
-      error: { code: error.code, message: error.message, ...(error.details ? { details: error.details } : {}) },
+      error: {
+        code: error.code,
+        message: error.message,
+        ...(error.details ? { details: error.details } : {}),
+      },
     });
     return;
   }
@@ -25,16 +29,24 @@ export const errorHandler: ErrorRequestHandler = (error: unknown, request, respo
       return;
     }
     if (error.code === 'P2025') {
-      response.status(404).json({ error: { code: 'NOT_FOUND', message: 'The requested record was not found.' } });
+      response
+        .status(404)
+        .json({ error: { code: 'NOT_FOUND', message: 'The requested record was not found.' } });
       return;
     }
   }
 
-  logger.error({ err: error, method: request.method, path: request.path }, 'Unhandled request error');
+  logger.error(
+    { err: error, method: request.method, path: request.path },
+    'Unhandled request error',
+  );
   response.status(500).json({
     error: {
       code: 'INTERNAL_ERROR',
-      message: env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : 'An unexpected error occurred.',
+      message:
+        env.NODE_ENV === 'production'
+          ? 'An unexpected error occurred.'
+          : 'An unexpected error occurred.',
     },
   });
 };

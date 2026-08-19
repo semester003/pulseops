@@ -25,13 +25,23 @@ function requireResourceRole(
 
       const record =
         resource === 'team'
-          ? await prisma.team.findUnique({ where: { id: resourceId }, select: { organizationId: true } })
+          ? await prisma.team.findUnique({
+              where: { id: resourceId },
+              select: { organizationId: true },
+            })
           : resource === 'service'
-            ? await prisma.service.findUnique({ where: { id: resourceId }, select: { organizationId: true } })
-            : await prisma.incident.findUnique({ where: { id: resourceId }, select: { organizationId: true } });
+            ? await prisma.service.findUnique({
+                where: { id: resourceId },
+                select: { organizationId: true },
+              })
+            : await prisma.incident.findUnique({
+                where: { id: resourceId },
+                select: { organizationId: true },
+              });
 
       if (!record) {
-        const resourceName = resource === 'team' ? 'Team' : resource === 'service' ? 'Service' : 'Incident';
+        const resourceName =
+          resource === 'team' ? 'Team' : resource === 'service' ? 'Service' : 'Incident';
         throw new NotFoundError(resourceName);
       }
 

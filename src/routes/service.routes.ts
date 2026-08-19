@@ -20,7 +20,12 @@ const canRead = requireServiceRole(
 const isAdmin = requireServiceRole(OrganizationRole.ADMIN);
 
 serviceRouter.get('/:serviceId', canRead, asyncHandler(getService));
-serviceRouter.patch('/:serviceId', isAdmin, validate(updateServiceSchema), asyncHandler(updateService));
+serviceRouter.patch(
+  '/:serviceId',
+  isAdmin,
+  validate(updateServiceSchema),
+  asyncHandler(updateService),
+);
 serviceRouter.delete('/:serviceId', isAdmin, asyncHandler(removeService));
 serviceRouter.post(
   '/:serviceId/incidents',

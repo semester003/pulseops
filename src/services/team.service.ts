@@ -55,7 +55,10 @@ export class TeamService {
   }
 
   public async addMember(teamId: string, userId: string) {
-    const team = await prisma.team.findUnique({ where: { id: teamId }, select: { organizationId: true } });
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      select: { organizationId: true },
+    });
     if (!team) {
       throw new NotFoundError('Team');
     }

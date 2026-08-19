@@ -7,13 +7,21 @@ export const teamIdParamsSchema = z.object({ teamId: z.string().cuid() });
 export const serviceIdParamsSchema = z.object({ serviceId: z.string().cuid() });
 
 export const registerSchema = z.object({
-  email: z.string().email().max(320).transform((value) => value.toLowerCase()),
+  email: z
+    .string()
+    .email()
+    .max(320)
+    .transform((value) => value.toLowerCase()),
   password: z.string().min(12).max(128),
   displayName: z.string().trim().min(1).max(100),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email().max(320).transform((value) => value.toLowerCase()),
+  email: z
+    .string()
+    .email()
+    .max(320)
+    .transform((value) => value.toLowerCase()),
   password: z.string().min(1).max(128),
 });
 
@@ -24,7 +32,11 @@ export const createOrganizationSchema = z.object({
 export const updateOrganizationSchema = createOrganizationSchema.partial();
 
 export const addOrganizationMemberSchema = z.object({
-  email: z.string().email().max(320).transform((value) => value.toLowerCase()),
+  email: z
+    .string()
+    .email()
+    .max(320)
+    .transform((value) => value.toLowerCase()),
   role: z.nativeEnum(OrganizationRole).default(OrganizationRole.VIEWER),
 });
 

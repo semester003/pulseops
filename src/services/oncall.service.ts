@@ -30,7 +30,10 @@ export class OnCallService {
     const team = await prisma.team.findUnique({ where: { id: teamId }, select: { id: true } });
     if (!team) throw new NotFoundError('Team');
 
-    const existing = await prisma.onCallSchedule.findUnique({ where: { teamId }, select: { id: true } });
+    const existing = await prisma.onCallSchedule.findUnique({
+      where: { teamId },
+      select: { id: true },
+    });
     if (existing) throw new ConflictError('This team already has an on-call schedule.');
 
     return prisma.onCallSchedule.create({
@@ -39,7 +42,9 @@ export class OnCallService {
         rotationPeriodMinutes: input.rotationPeriodMinutes,
         ...(input.rotationStartAt === undefined ? {} : { rotationStartAt: input.rotationStartAt }),
       },
-      include: { members: { include: { user: { select: { id: true, email: true, displayName: true } } } } },
+      include: {
+        members: { include: { user: { select: { id: true, email: true, displayName: true } } } },
+      },
     });
   }
 
@@ -97,7 +102,10 @@ export class OnCallService {
   public async removeMember(teamId: string, userId: string) {
     await prisma.$transaction(
       async (transaction) => {
-        const schedule = await transaction.onCallSchedule.findUnique({ where: { teamId }, select: { id: true } });
+        const schedule = await transaction.onCallSchedule.findUnique({
+          where: { teamId },
+          select: { id: true },
+        });
         if (!schedule) throw new NotFoundError('On-call schedule');
 
         const member = await transaction.onCallMember.findUnique({

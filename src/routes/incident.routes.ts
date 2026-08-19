@@ -24,6 +24,11 @@ const isAdmin = requireIncidentRole(OrganizationRole.ADMIN);
 const canRespond = requireIncidentRole(OrganizationRole.ADMIN, OrganizationRole.RESPONDER);
 
 incidentRouter.get('/:incidentId', canRead, asyncHandler(getIncident));
-incidentRouter.patch('/:incidentId', isAdmin, validate(updateIncidentSchema), asyncHandler(updateIncident));
+incidentRouter.patch(
+  '/:incidentId',
+  isAdmin,
+  validate(updateIncidentSchema),
+  asyncHandler(updateIncident),
+);
 incidentRouter.post('/:incidentId/acknowledge', canRespond, asyncHandler(acknowledgeIncident));
 incidentRouter.post('/:incidentId/resolve', canRespond, asyncHandler(resolveIncident));

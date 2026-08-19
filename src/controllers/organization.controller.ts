@@ -54,7 +54,9 @@ export const updateOrganizationMember: RequestHandler = async (request, response
   const { organizationId } = organizationIdParamsSchema.parse(request.params);
   const { memberId } = memberIdParamsSchema.parse(request.params);
   const { role } = request.body as z.infer<typeof updateOrganizationMemberSchema>;
-  response.status(200).json({ member: await organizationService.updateMemberRole(organizationId, memberId, role) });
+  response
+    .status(200)
+    .json({ member: await organizationService.updateMemberRole(organizationId, memberId, role) });
 };
 
 export const removeOrganizationMember: RequestHandler = async (request, response) => {

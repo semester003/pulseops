@@ -15,7 +15,10 @@ const teamService = new TeamService();
 
 export const createTeam: RequestHandler = async (request, response) => {
   const { organizationId } = organizationIdParamsSchema.parse(request.params);
-  const team = await teamService.create(organizationId, request.body as z.infer<typeof createTeamSchema>);
+  const team = await teamService.create(
+    organizationId,
+    request.body as z.infer<typeof createTeamSchema>,
+  );
   response.status(201).json({ team });
 };
 
